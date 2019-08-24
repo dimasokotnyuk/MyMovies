@@ -1,6 +1,5 @@
 package com.example.mymovies;
 
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mymovies.adapters.MovieAdapter;
 import com.example.mymovies.adapters.ReviewAdapter;
 import com.example.mymovies.adapters.TrailerAdapter;
 import com.example.mymovies.data.FavouriteMovie;
@@ -31,6 +29,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -50,6 +49,8 @@ public class DetailActivity extends AppCompatActivity {
     private int id;
     private Movie movie;
     FavouriteMovie favouriteMovie;
+
+    private static String lang;
 
     private MainViewModel viewModel;
 
@@ -80,11 +81,12 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        lang = Locale.getDefault().getLanguage();
         imageViewBigPoster = findViewById(R.id.imageViewBigPoster);
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewOriginalTitle = findViewById(R.id.textViewOriginalTitle);
         textViewRating = findViewById(R.id.textViewRating);
-        textViewDataRelease = findViewById(R.id.textViewRleaseDate);
+        textViewDataRelease = findViewById(R.id.textViewReleaseDate);
         textViewOverview = findViewById(R.id.textViewOverview);
         imageViewAddToFavourite = findViewById(R.id.imageViewAddToFavourite);
         imageViewAddToFavourite.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +103,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("id")) {
+        if (intent != null && intent.hasExtra("id") && !intent.hasExtra("lol")) {
             id = intent.getIntExtra("id", -1);
             viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
             movie = viewModel.getFavouriteMovieById(id);
@@ -135,8 +137,8 @@ public class DetailActivity extends AppCompatActivity {
         recyclerViewTrailers.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewTrailers.setAdapter(trailerAdapter);
         recyclerViewReviews.setAdapter(reviewAdapter);
-        JSONObject jsonObjectTrailers = NetworkUtils.getJSONForVideos(movie.getId());
-        JSONObject jsonObjectReviews = NetworkUtils.getJSONForReviews(movie.getId());
+        JSONObject jsonObjectTrailers = NetworkUtils.getJSONForVideos(movie.getId(),lang);
+        JSONObject jsonObjectReviews = NetworkUtils.getJSONForReviews(movie.getId(),lang);
         ArrayList<Trailer> trailers = JSONUtils.getTrailersFromJSON(jsonObjectTrailers);
         ArrayList<Review> reviews = JSONUtils.getReviewsFromJSON(jsonObjectReviews);
         reviewAdapter.setReviews(reviews);
