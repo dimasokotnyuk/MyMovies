@@ -17,7 +17,7 @@ public abstract class MovieDatabase extends RoomDatabase {
                 database = Room.databaseBuilder(context, MovieDatabase.class, DB_NAME).fallbackToDestructiveMigration().build();
             }
         }
-        return database;
+          return database;
     }
 
     public abstract MovieDao movieDao();
